@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,s200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <title>weather app</title>
+</head>
+
+<body>
+    <div class="card">
+        <div class="nav">
+            <input type="text" placeholder="enter city name" id="search">
+            <button onclick="searchWeather()">
+                <img src="images/search.png" alt="">
+            </button>
+        </div>
+        <div class="error">
+            invalid input
+        </div>
+        <div class="weather">
+            <img src="images/drizzle.png" class="weather-icons">
+
+            <h1 class="temperature">
+                20°C
+            </h1>
+            <h2 class="city-name">
+                jolaibari
+            </h2>
+        </div>
+        <div class="details">
+            <img src="images/humidity.png">
+            <div class="humidity">
+                <p class="hum">50%</p>
+                <p>Humidity</p>
+            </div>
+            <img src="images/wind.png">
+            <div class="wind-speed">
+                <p class="wind">10km/h</p>
+                <p>Wind Speed</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=";
+        const apiKey = "&appid=66212654723d6612c3e37d0e7f0cd5a6&units=metric";
+        const defaultCity = "Agartala";
+        const weatherIcon = document.querySelector(".weather-icons");
+
+
+        function updateWather(data){
+
+            document.querySelector(".city-name").innerHTML = data.name;
+            document.querySelector(".temperature").innerHTML = data.main.temp + "°C";
+            document.querySelector(".hum").innerHTML = data.main.humidity + "%";
+            document.querySelector(".wind").innerHTML = data.wind.speed + " km/h";
+
+            if (data.weather[0].main == "Clouds"){
+                weatherIcon.src = "images/clouds.png"
+            }
+            else if (data.weather[0].main == "Clear"){
+                weatherIcon.src = "images/clear.png"
+            }
+            else if (data.weather[0].main == "Drizzle"){
+                weatherIcon.src = "images/drizzle.png"
+            }
+            else if (data.weather[0].main == "Mist"){
+                weatherIcon.src = "images/mist.png"
+            }
+            else if (data.weather[0].main == "Rain"){
+                weatherIcon.src = "images/rain.png"
+            }
+            else if (data.weather[0].main == "Snow"){
+                weatherIcon.src = "images/snow.png"
+            }
+
+        }
+        function showError(){
+            document.querySelector('.weather').style.display = 'none';
+            document.querySelector('.details').style.display = 'none';
+            document.querySelector('.error').style.display = 'block';
+        }
+
+        async function checkWeather() {
+            const response = await fetch(apiUrl+defaultCity+apiKey);
+            let data = await response.json();
+            console.log(data);
+            updateWather(data);
+
+
+        }
+        async function searchWeather(){
+            let cityName = document.getElementById("search").value;
+            const response = await fetch(apiUrl+cityName+apiKey);
+            let data = await response.json();
+            if (response.status == 404){
+                showError();
+            }else{
+                document.querySelector('.weather').style.display = 'flex';
+                document.querySelector('.details').style.display = 'flex';
+                document.querySelector('.error').style.display = 'none';
+                updateWather(data);
+            }
+            console.log(data);
+            
+        }
+
+
+        checkWeather();
+        
+        
+
+    </script>
+
+
+</body>
+
+</html>
